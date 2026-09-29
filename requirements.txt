@@ -1,0 +1,17 @@
+# Core Data Science
+numpy
+pandas
+
+# Visualization
+matplotlib
+seaborn
+
+# Notebook & IDE
+jupyter
+jupyterlab
+
+# Excel Support
+openpyxl
+
+# Utilities
+scikit-learn

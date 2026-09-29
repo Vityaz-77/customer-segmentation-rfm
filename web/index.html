@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Segmentation & RFM Analytics Dashboard | Executive EDA Portfolio</title>
+  <meta name="description" content="Dashboard interaktif analisis segmentasi pelanggan berbasis metode RFM (Recency, Frequency, Monetary) untuk strategi retensi dan pertumbuhan omzet e-commerce.">
+  <meta name="keywords" content="Customer Segmentation, RFM Analysis, Data Science, EDA, Machine Learning, Portfolio, Analytics Dashboard">
+  <meta name="author" content="Data Science & Analytics Portfolio">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       Header Navigation
+       ========================================================================= -->
+  <header class="header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+            <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>RFM Customer Intelligence</h1>
+          <div class="brand-badge">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            <span>Live Portfolio Dashboard</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="openUploadModalBtn" class="btn btn-secondary" title="Upload data CSV transaksi sendiri">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span>Upload CSV</span>
+        </button>
+
+        <button id="exportFilteredCsvBtn" class="btn btn-primary" title="Download data yang sedang difilter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Ekspor CSV</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       Main Content
+       ========================================================================= -->
+  <main class="container">
+
+    <!-- Hero / Meta Header -->
+    <section class="hero" aria-labelledby="heroHeading">
+      <div class="hero-content">
+        <div class="hero-title">
+          <h2 id="heroHeading">Customer Segmentation & Value Optimization</h2>
+          <p>
+            Eksplorasi perilaku 300 pelanggan e-commerce berdasarkan analisis <strong>Recency (kebaruan)</strong>, 
+            <strong>Frequency (intensitas transaksi)</strong>, dan <strong>Monetary (nilai belanja)</strong> untuk menyusun strategi pemasaran presisi.
+          </p>
+        </div>
+        <div class="dataset-meta">
+          <div>Dataset: <strong id="datasetSourceBadge">transactions_dummy.csv</strong></div>
+          <div style="border-left: 1px solid var(--border-subtle); padding-left: 14px;">
+            Filter Aktif: <strong id="datasetActiveCount">300 / 300</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Executive KPI Cards -->
+    <section class="kpi-grid" aria-label="Executive Key Performance Indicators">
+      
+      <!-- KPI 1: Revenue -->
+      <article class="kpi-card" data-type="revenue">
+        <div class="kpi-header">
+          <span class="kpi-title">Total Gross Revenue</span>
+          <div class="kpi-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpiTotalRevenue">Rp 0</div>
+        <div class="kpi-subtext">Akumulasi nilai transaksi belanja pelanggan</div>
+      </article>
+
+      <!-- KPI 2: Total Customers -->
+      <article class="kpi-card" data-type="customers">
+        <div class="kpi-header">
+          <span class="kpi-title">Total Pelanggan</span>
+          <div class="kpi-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpiTotalCustomers">0</div>
+        <div class="kpi-subtext">Jumlah pelanggan terdaftar yang aktif teranalisis</div>
+      </article>
+
+      <!-- KPI 3: AOV / Customer Value -->
+      <article class="kpi-card" data-type="aov">
+        <div class="kpi-header">
+          <span class="kpi-title">Rata-rata Order (AOV)</span>
+          <div class="kpi-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpiAOV">Rp 0</div>
+        <div class="kpi-subtext">Estimasi nilai belanja per transaksi</div>
+      </article>
+
+      <!-- KPI 4: Churn Risk -->
+      <article class="kpi-card" data-type="churn">
+        <div class="kpi-header">
+          <span class="kpi-title">Indeks Risiko Churn</span>
+          <div class="kpi-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpiChurnRisk">0%</div>
+        <div class="kpi-subtext">Pelanggan di kategori <span class="highlight-down">At Risk</span> & <span class="highlight-down">Hibernating</span></div>
+      </article>
+
+      <!-- KPI 5: Top Segment -->
+      <article class="kpi-card" data-type="topseg">
+        <div class="kpi-header">
+          <span class="kpi-title">Segmen Dominan</span>
+          <div class="kpi-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-value" id="kpiTopSegment" style="font-size: 1.45rem;">-</div>
+        <div class="kpi-subtext">Populasi terbanyak dalam filter saat ini</div>
+      </article>
+
+    </section>
+
+    <!-- Interactive Filter Toolbar -->
+    <section class="toolbar-section" aria-label="Toolbar Filter dan Pencarian">
+      <div class="toolbar-card">
+        
+        <!-- Segment Filter Pills -->
+        <div class="filter-pills-row" role="tablist" aria-label="Filter Segmen Pelanggan">
+          <span class="filter-label">Filter Segmen:</span>
+
+          <button class="pill-btn active" data-segment="ALL" role="tab" aria-selected="true">
+            <span>Semua Segmen</span>
+            <span class="pill-count">300</span>
+          </button>
+          <button class="pill-btn" data-segment="Champions" role="tab" aria-selected="false">
+            <span>👑 Champions</span>
+            <span class="pill-count">39</span>
+          </button>
+          <button class="pill-btn" data-segment="Loyal Customers" role="tab" aria-selected="false">
+            <span>⭐ Loyal</span>
+            <span class="pill-count">48</span>
+          </button>
+          <button class="pill-btn" data-segment="Potential Loyalists" role="tab" aria-selected="false">
+            <span>🚀 Potential</span>
+            <span class="pill-count">33</span>
+          </button>
+          <button class="pill-btn" data-segment="Need Attention" role="tab" aria-selected="false">
+            <span>⚠️ Need Attention</span>
+            <span class="pill-count">39</span>
+          </button>
+          <button class="pill-btn" data-segment="At Risk" role="tab" aria-selected="false">
+            <span>🚨 At Risk</span>
+            <span class="pill-count">33</span>
+          </button>
+          <button class="pill-btn" data-segment="Hibernating" role="tab" aria-selected="false">
+            <span>💤 Hibernating</span>
+            <span class="pill-count">66</span>
+          </button>
+          <button class="pill-btn" data-segment="Others" role="tab" aria-selected="false">
+            <span>📁 Others</span>
+            <span class="pill-count">42</span>
+          </button>
+        </div>
+
+        <!-- Search and Action Controls -->
+        <div class="search-and-actions-row">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="customerSearchInput" class="search-input" placeholder="Cari ID Pelanggan (contoh: CUST-0004)..." autocomplete="off">
+          </div>
+
+          <div class="toolbar-controls">
+            <button id="resetFiltersBtn" class="btn btn-outline" title="Kembalikan semua filter ke awal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2.5 2v6h6M21.5 22v-6h-6"></path>
+                <path d="M22 11.5A10 10 0 0 0 3.2 7.2M2 12.5a10 10 0 0 0 18.8 4.2"></path>
+              </svg>
+              <span>Reset Filter</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Visual Charts Grid -->
+    <section class="charts-grid" aria-label="Visualisasi Grafik Interaktif">
+      
+      <!-- Chart 1: Donut Segment Distribution -->
+      <article class="chart-card chart-col-5">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3>Proporsi Segmen Pelanggan</h3>
+            <p>Persentase komposisi kelompok dari total populasi</p>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="segmentDoughnutChart"></canvas>
+        </div>
+      </article>
+
+      <!-- Chart 2: Revenue by Segment -->
+      <article class="chart-card chart-col-7">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3>Kontribusi Omzet per Segmen (IDR)</h3>
+            <p>Total nilai belanja transaksi yang disumbangkan tiap kelompok</p>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="revenueBySegmentChart"></canvas>
+        </div>
+      </article>
+
+      <!-- Chart 3: Average RFM Metric Scores -->
+      <article class="chart-card chart-col-6">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3>Benchmark Rata-rata Skor RFM (Skala 1–5)</h3>
+            <p>Perbandingan kekuatan Recency, Frequency, dan Monetary</p>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="avgRfMetricsChart"></canvas>
+        </div>
+      </article>
+
+      <!-- Chart 4: Recency vs Spending Behavior -->
+      <article class="chart-card chart-col-6">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3>Matriks Kebaruan vs Nilai Belanja</h3>
+            <p>Ukuran bubble merepresentasikan frekuensi transaksi pelanggan</p>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="recencyVsMonetaryChart"></canvas>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Strategic Marketing Playbook -->
+    <section class="playbook-section" aria-labelledby="playbookHeading">
+      <div class="section-header">
+        <h3 id="playbookHeading">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span>Actionable Strategic Playbook</span>
+        </h3>
+        <p>Rekomendasi taktis untuk tim Marketing & CRM berdasarkan status segmen saat ini.</p>
+      </div>
+
+      <div class="playbook-grid" id="playbookGrid">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </section>
+
+    <!-- Customer Explorer Data Table -->
+    <section class="table-section" aria-labelledby="tableHeading">
+      <div class="table-card">
+        
+        <div class="table-card-header">
+          <div>
+            <h3 id="tableHeading" style="font-size: 1.1rem; font-weight: 700;">Data Explorer Pelanggan</h3>
+            <div class="table-stats-badge">Klik header tabel untuk mengurutkan (sort) data berdasarkan kolom</div>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="customerDataTable">
+            <thead>
+              <tr>
+                <th class="sortable" data-col="customer_id"><span>Customer ID</span></th>
+                <th class="sortable" data-col="Recency"><span>Recency (Hari)</span></th>
+                <th class="sortable" data-col="Frequency"><span>Frequency</span></th>
+                <th class="sortable sorted-desc" data-col="Monetary"><span>Monetary (Spending)</span></th>
+                <th class="sortable" data-col="R_Score"><span>R Score</span></th>
+                <th class="sortable" data-col="F_Score"><span>F Score</span></th>
+                <th class="sortable" data-col="M_Score"><span>M Score</span></th>
+                <th class="sortable" data-col="Segment"><span>Segmen</span></th>
+              </tr>
+            </thead>
+            <tbody id="customerTableBody">
+              <!-- Rendered dynamically by app.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-pagination">
+          <div class="pagination-info" id="tablePaginationInfo">
+            Menampilkan data...
+          </div>
+          <div class="pagination-controls">
+            <button id="prevPageBtn" class="page-btn">Sebelumnya</button>
+            <span class="page-indicator" id="tablePageIndicator">Hal 1</span>
+            <button id="nextPageBtn" class="page-btn">Berikutnya</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       Upload CSV Modal
+       ========================================================================= -->
+  <div class="modal-overlay" id="uploadModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-dialog">
+      <button class="modal-close-btn" id="closeModalBtn" aria-label="Tutup Dialog">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <h3 id="modalTitle" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Upload Dataset Kustom</h3>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 18px;">
+        Unggah file CSV baru untuk langsung menghitung segmentasi RFM dan memperbarui dashboard secara otomatis.
+      </p>
+
+      <div class="drop-zone" id="dropZone">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <div style="font-weight: 600; color: #fff; margin-bottom: 4px;">Tarik & lepaskan file .CSV di sini</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">atau klik untuk memilih file dari komputer</div>
+        <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+      </div>
+
+      <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 20px;">
+        <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; text-transform: uppercase;">Format yang Didukung:</div>
+        <ul style="font-size: 0.78rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.6;">
+          <li><strong>File RFM Terproses</strong>: Kolom <code>customer_id</code>, <code>Recency</code>, <code>Frequency</code>, <code>Monetary</code>, <code>Segment</code>.</li>
+          <li><strong>File Transaksi Mentah</strong>: Kolom <code>customer_id</code>, <code>transaction_date</code>, <code>total_amount</code>.</li>
+        </ul>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <button id="resetDemoDataBtn" class="btn btn-secondary">
+          Muat Ulang Demo Asli
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- =========================================================================
+       Footer
+       ========================================================================= -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div>
+        <p style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">
+          Customer Segmentation RFM Portfolio Project
+        </p>
+        <p>Dirancang & dibangun sebagai showcase Data Science & Interactive Analytics untuk rekrutmen profesional.</p>
+      </div>
+
+      <div class="tech-badges">
+        <span class="tech-badge">Python 3.12</span>
+        <span class="tech-badge">Pandas</span>
+        <span class="tech-badge">RFM Quantiles</span>
+        <span class="tech-badge">Vanilla CSS</span>
+        <span class="tech-badge">Chart.js</span>
+        <span class="tech-badge">GitHub Pages Ready</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Data Bundle (Offline / Local File Compatible) -->
+  <script src="data.js"></script>
+
+  <!-- App Script -->
+  <script src="app.js"></script>
+</body>
+</html>

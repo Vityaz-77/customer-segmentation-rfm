@@ -1,0 +1,60 @@
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ========================
+# Virtual Environment
+# ========================
+.venv/
+venv/
+env/
+ENV/
+
+# ========================
+# Jupyter Notebook
+# ========================
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ========================
+# Data Files (large raw data)
+# ========================
+# Uncomment baris di bawah jika raw data terlalu besar untuk di-push
+# data/raw/*.csv
+
+# ========================
+# IDE & Editor
+# ========================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ========================
+# OS Files
+# ========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ========================
+# Logs & Temp
+# ========================
+*.log
+*.tmp
+*.bak
+
+# ========================
+# Environment Variables
+# ========================
+.env
+.env.*
